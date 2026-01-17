@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 #Imports
+#导入依赖包
 import sys
 import pysam
 import os
@@ -9,6 +10,7 @@ import logging
 import collections
 
 #Functions
+#函数定义
 def lengths_offsets(value):
     """Split the given comma separated value to multiple integer values. """
     values = []
@@ -41,10 +43,12 @@ def get_RPF_counts(pysamobj, transcript_name, transcript_length, read_lengths, r
 
 
 # create logger for the entire program
+#为整个程序创建日志记录器
 log = logging.getLogger('riboplot')
 log.setLevel(logging.DEBUG)
 
 # create console handler with a higher log level
+#创建控制台输出的日志处理器，并设置较高日志级别
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
@@ -58,11 +62,13 @@ def create_parser():
         prog='countingScript.py', description='Output read counts for all transcripts')
 
     # required arguments
+    #必需参数
     required = parser.add_argument_group('required arguments')
     required.add_argument('-bam', '--BAMinput', help='Ribo-Seq alignment file in BAM format', required=True)
     required.add_argument('-fasta', '--transcriptome_fasta', help='FASTA format file of the transcriptome', required=True)
 
     # optional arguments
+    #可选参数
     parser.add_argument('-len', '--read_lengths', help='Read lengths to consider (default: %(default)s). '
                         'Multiple read lengths should be separated by commas. If multiple read lengths '
                         'are specified, corresponding read offsets should also be specified. If you do '
@@ -85,7 +91,9 @@ def main(args):
         '\n'.join(['{:<20}: {}'.format(k, v) for k, v in vars(args).items()])))
 
     #also need BAM index ****
+    #还需要 BAM 索引文件 ****
     #should add in QC steps here to check inputs are valid
+    #此处可以增加 QC 步骤以检查输入是否有效
     log.info('check 1')
 
     with pysam.AlignmentFile(BAMinput, 'rb') as b, pysam.FastaFile(fasta_file) as f:
@@ -93,6 +101,7 @@ def main(args):
         count=0
     
     #create output directories
+    #创建输出目录
         if not os.path.exists(outpath):
             os.mkdir(outpath)
         os.chdir(outpath)

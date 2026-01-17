@@ -1,7 +1,9 @@
 #load libraries
+#加载库。
 library(tidyverse)
 
 #read in common variables
+#读取通用变量。
 source("common_variables.R")
 
 myTheme <- theme_classic()+
@@ -14,6 +16,7 @@ myTheme <- theme_classic()+
 
 
 #read in read counts summaries----
+#读取各样本的 reads 计数汇总。
 data_list <- list()
 for (sample in RPF_sample_names) {
   read_csv(file = file.path(parent_dir, "logs", paste0(sample, "_read_counts.csv"))) %>%
@@ -25,6 +28,7 @@ RPF_counts <- do.call("rbind", data_list)
 write_csv(file = file.path(parent_dir, "logs/RPF_reads_summary.csv"), RPF_counts)
 
 #input read counts----
+#绘制输入 reads 总数柱状图。
 RPF_counts %>%
   ggplot(aes(x = condition, y = cutadapt_in, fill = replicate))+
   geom_col(position = position_dodge())+
@@ -37,6 +41,7 @@ print(RPFs_counts_plot)
 dev.off()
 
 #trimmed percentages----
+#绘制度后保留 reads 的百分比。
 RPF_counts %>%
   mutate(cutadapt_perc = (cutadapt_out / cutadapt_in) * 100) %>%
   ggplot(aes(x = condition, y = cutadapt_perc, fill = replicate))+
@@ -51,6 +56,7 @@ print(RPFs_cutadapt_plot)
 dev.off()
 
 #alignment percentages----
+#绘制比对到 rRNA、tRNA、pc 以及未比对 reads 的比例。
 RPF_counts %>%
   mutate(rRNA_perc = rRNA_out / UMI_clipped_out * 100,
          pc_perc = (pc_out / UMI_clipped_out) * 100,
@@ -72,6 +78,7 @@ print(RPF_aligments_plot)
 dev.off()
 
 #unique pc percentages----
+#绘制去重后 pc 唯一 reads 的百分比。
 RPF_counts %>%
   mutate(unique_perc = (deduplication_out / deduplication_in) * 100) %>%
   ggplot(aes(x = condition, y = unique_perc, fill = replicate))+
@@ -86,6 +93,7 @@ print(RPFs_deduplication_plot)
 dev.off()
 
 #final pc counts----
+#绘制最终 pc 唯一 reads 的绝对数。
 RPF_counts %>%
   ggplot(aes(x = condition, y = deduplication_out, fill = replicate))+
   geom_col(position = position_dodge())+

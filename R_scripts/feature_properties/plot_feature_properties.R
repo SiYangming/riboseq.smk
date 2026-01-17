@@ -1,10 +1,13 @@
 #load packages----
+# 加载所需 R 包。----
 library(tidyverse)
 
 #read in common variables
+# 读入公共变量配置。
 source("common_variables.R")
 
 #themes----
+# 定义绘图主题。----
 violin_theme <- theme_bw()+
   theme(legend.position='none',
         axis.text.x = element_text(size=20), 
@@ -14,16 +17,19 @@ violin_theme <- theme_bw()+
         plot.title = element_text(hjust = 1, vjust = 0, size=14, face="bold"))
 
 #read in data----
+# 读入差异分析结果和最丰度转录本信息。----
 merged_DEseq_data <- read_csv(file.path(parent_dir, "Analysis/DESeq2_output/merged_DESeq2.csv"))
 most_abundant_transcripts <- read_csv(file = file.path(parent_dir, "Analysis/most_abundant_transcripts/most_abundant_transcripts_IDs.csv"))
 
 #read in feature properties----
+# 读入转录本特征属性数据。----
 transcript_info_dir <- "transcript_info_dir"
 UTR5_data <- read_csv(file = file.path(transcript_info_dir, "gencode.vM27.pc_transcripts_filtered_UTR5_composition.csv"))
 CDS_data <- read_csv(file = file.path(transcript_info_dir, "gencode.vM27.pc_transcripts_filtered_CDS_composition.csv"))
 UTR3_data <- read_csv(file = file.path(transcript_info_dir, "gencode.vM27.pc_transcripts_filtered_UTR3_composition.csv"))
 
 #UTR5----
+# 5'UTR 相关特征分析。----
 UTR5_data %>%
   inner_join(most_abundant_transcripts, by = "transcript") %>%
   inner_join(merged_DEseq_data, by = "gene") %>%
@@ -33,6 +39,7 @@ UTR5_data %>%
 summary(merged_UTR5_data)
 
 #length
+# UTR5 长度分布。
 merged_UTR5_data %>%
   filter(RPFs_group == "RPFs down" | RPFs_group == "RPFs up" | is.na(RPFs_group)) %>%
   ggplot(aes(x = RPFs_group, y = length, fill = RPFs_group))+
@@ -61,6 +68,7 @@ print(UTR5_length_TE_group_plot)
 dev.off()
 
 #GC content
+# UTR5 GC 含量分布。
 merged_UTR5_data %>%
   filter(RPFs_group == "RPFs down" | RPFs_group == "RPFs up" | is.na(RPFs_group)) %>%
   mutate(GC_content = G_content + C_content) %>%
@@ -89,6 +97,7 @@ print(UTR5_GC_TE_group_plot)
 dev.off()
 
 #CDS----
+# CDS 区段特征分析。----
 CDS_data %>%
   inner_join(most_abundant_transcripts, by = "transcript") %>%
   inner_join(merged_DEseq_data, by = "gene") %>%
@@ -98,6 +107,7 @@ CDS_data %>%
 summary(merged_CDS_data)
 
 #length
+# CDS 长度分布。
 merged_CDS_data %>%
   filter(RPFs_group == "RPFs down" | RPFs_group == "RPFs up" | is.na(RPFs_group)) %>%
   ggplot(aes(x = RPFs_group, y = length, fill = RPFs_group))+
@@ -126,6 +136,7 @@ print(CDS_length_TE_group_plot)
 dev.off()
 
 #GC content
+# CDS GC 含量分布。
 merged_CDS_data %>%
   filter(RPFs_group == "RPFs down" | RPFs_group == "RPFs up" | is.na(RPFs_group)) %>%
   mutate(GC_content = G_content + C_content) %>%
@@ -154,6 +165,7 @@ print(CDS_GC_TE_group_plot)
 dev.off()
 
 #UTR3----
+# 3'UTR 特征分析。----
 UTR3_data %>%
   inner_join(most_abundant_transcripts, by = "transcript") %>%
   inner_join(merged_DEseq_data, by = "gene") %>%
@@ -163,6 +175,7 @@ UTR3_data %>%
 summary(merged_UTR3_data)
 
 #length
+# UTR3 长度分布。
 merged_UTR3_data %>%
   filter(RPFs_group == "RPFs down" | RPFs_group == "RPFs up" | is.na(RPFs_group)) %>%
   ggplot(aes(x = RPFs_group, y = length, fill = RPFs_group))+
@@ -191,6 +204,7 @@ print(UTR3_length_TE_group_plot)
 dev.off()
 
 #GC content
+# UTR3 GC 含量分布。
 merged_UTR3_data %>%
   filter(RPFs_group == "RPFs down" | RPFs_group == "RPFs up" | is.na(RPFs_group)) %>%
   mutate(GC_content = G_content + C_content) %>%
@@ -217,4 +231,3 @@ merged_UTR3_data %>%
 png(filename = file.path(parent_dir, "plots/feature_properties/UTR3_GC_TE_group_plot.png"), width = 500, height = 500)
 print(UTR3_GC_TE_group_plot)
 dev.off()
-

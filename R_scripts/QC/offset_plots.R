@@ -1,15 +1,19 @@
 #load libraries
+#加载库。
 library(tidyverse)
 library(grid)
 library(gridExtra)
 library(parallel)
 
 #read in common variables
+#读取通用变量。
 source("common_variables.R")
 lengths <- 25:35
 
 #functions
+#函数定义。
 #write a function that will read in a csv file for use with parLapply
+#定义用于 parLapply 并行读取 CSV 的函数。
 read_counts_csv <- function(k){
   df <- read.csv(file = k)
   df$fyle <- rep(k)
@@ -17,13 +21,16 @@ read_counts_csv <- function(k){
 }
 
 #themes
+#定义通用绘图主题。
 myTheme <- theme_classic()+
   theme(axis.title = element_text(size = 16),
         axis.text = element_text(size = 16),
         plot.title = element_text(size = 18, face = "bold", hjust = 0.5))
 
 #read in data----
+#读取数据。
 #generate a list of file names
+#生成各样本与 read length、剪切位置对应的文件名列表。
 fyle_list <- list()
 for(sample in RPF_sample_names) {
   for(i in lengths){
@@ -33,13 +40,20 @@ for(sample in RPF_sample_names) {
 }
 
 #read in the data with parLapply
+#使用 parLapply 并行读取数据。
 no_cores <- detectCores() - 1 #sets the number of cores to use (all but one)
+#设置使用的核心数（保留一个核心）。
 cl <- makeCluster(no_cores) #Initiates cluster
+#初始化集群。
 data_list <- parLapply(cl, fyle_list, read_counts_csv) #reads in the data
+#并行读取所有文件。
 stopCluster(cl) #Stops cluster
+#停止集群。
 
 #combine data_list into one data frame
+#将列表元素合并为一个数据框。
 #extract sample, read length and splice position from fyle
+#从文件名中提取样本名、读长和剪切位置。
 do.call("rbind", data_list) %>%
   mutate(read_length = str_remove(fyle, ".+pc_L"),
          read_length = as.numeric(str_remove(read_length, "_Off0_.+")),
@@ -52,6 +66,7 @@ do.call("rbind", data_list) %>%
 summary(all_data)
 
 #plot offset plots----
+#绘制各样本在起始/终止密码子附近的 offset 曲线。
 for (sample in RPF_sample_names) {
   
   start_site_plot_list <- list()
@@ -93,6 +108,7 @@ for (sample in RPF_sample_names) {
 }
 
 #all samples
+#合并所有样本绘制 offset 曲线。
 start_site_plot_list <- list()
 stop_site_plot_list <- list()
 

@@ -1,6 +1,8 @@
 #These functions are for use with the scripts within the meta_plots directory of the Bushell-lab/Riboseq Github repository----
+# 这些函数供 Bushell-lab/Riboseq 仓库 meta_plots 目录下脚本调用。----
 
 #create themes----
+# 创建绘图主题。----
 my_theme <- theme_bw()+
   theme(panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -35,6 +37,7 @@ CDS_only_theme <- my_theme+
         plot.title = element_text(size = 22, face = "bold", hjust = 0.5))
 
 #the following function normalises the data. It calculates Counts Per Million (CPM).
+# 以下函数对数据进行归一化，计算每百万计数（CPM）。----
 normalise_data <- function(df) {
   
   df %>%
@@ -50,6 +53,7 @@ normalise_data <- function(df) {
 }
 
 #The following function creates a new column denoting the bin
+# 以下函数为每个位置计算其所在的分箱（bin）。----
 calculate_bins <- function(x, n) {
   bins <- n
   cut_size <- 1 / bins
@@ -65,14 +69,20 @@ calculate_bins <- function(x, n) {
 #It needs a region lengths file
 #region cutoffs are the minimum sizes of the regions to include. It should be supplied as a numeric vector, referring to the minimum size for the 5'UTR, CDS and 3'UTR (in that order). Default is c(50,300,50)
 #bins are the number of bins within each region. This should also be a numeric vector, referring to the number of bins for the 5'UTR, CDS and 3'UTR (in that order). Default is c(25,50,25)
+# 以下函数在 5'UTR、CDS 和 3'UTR 区域内对数据进行分箱。
+# 需要区域长度文件；
+# region_cutoffs 为各区域的最小长度阈值（按 5'UTR、CDS、3'UTR 顺序），默认 c(50,300,50)；
+# bins 为各区域的分箱数量，默认 c(25,50,25)。
 bin_data <- function(df, region_lengths, region_cutoffs = c(50,300,50), bins = c(25,50,25)) {
   
   #filter the transcripts with UTRs/CDSs less than the defined thresholds
+  # 根据给定长度阈值过滤过短的转录本。
   df %>%
     inner_join(region_lengths, by = "transcript") %>%
     filter(UTR5_len >= region_cutoffs[1] & CDS_len >= region_cutoffs[2] & UTR3_len >= region_cutoffs[3]) -> filtered_data
   
   #bin data
+  # 对数据进行分箱。----
   #5'UTR
   filtered_data %>%
     filter(Position <= UTR5_len) %>%

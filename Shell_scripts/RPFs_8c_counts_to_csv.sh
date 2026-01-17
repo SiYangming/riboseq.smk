@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 #read in variables
+#读取公共变量
 source common_variables.sh
 
 for filename in $RPF_filenames

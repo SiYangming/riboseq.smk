@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
 #Imports
+#导入依赖包
 import re
 import argparse
 from Bio import SeqIO
 
 #Functions
+#函数定义
 def read_in_fasta(afasta):
-    '''Reads in a fasta file to a dictionary'''
+    '''Reads in a fasta file to a dictionary
+    读取 fasta 文件并将其保存到字典中。
+    '''
     fasta_dict = {}
     fasta_sequences = SeqIO.parse(open(afasta),'fasta')
     for fasta in fasta_sequences:
@@ -15,7 +19,9 @@ def read_in_fasta(afasta):
     return fasta_dict
 
 def extract_HAVANA_IDs(GTFfyle):
-    '''Reads a gtf file line by line. Extracts the transcript ID from each feature line if transcript is annotated by HAVANA as being protein coding'''
+    '''Reads a gtf file line by line. Extracts the transcript ID from each feature line if transcript is annotated by HAVANA as being protein coding
+    按行读取 GTF 文件，如果转录本由 HAVANA 注释为蛋白编码，则提取其转录本 ID。
+    '''
     HAVANA_IDs_dict = {}
     with open(GTFfyle,'r') as f:
         for line in f:
@@ -37,7 +43,9 @@ def extract_HAVANA_IDs(GTFfyle):
     return HAVANA_IDs_dict
 
 def read_region_lengths(csv_fyle):
-    '''reads in region lengths csv file and saves as a dictionary'''
+    '''reads in region lengths csv file and saves as a dictionary
+    读取区域长度信息的 CSV 文件，并保存为字典。
+    '''
     adict = {}
     with open(csv_fyle, 'r') as f:
         for line in f:
@@ -49,25 +57,32 @@ def read_region_lengths(csv_fyle):
     return adict
 
 def filter_fasta(fasta_dict, HAVANA_IDs, region_lens):
-    '''filters fasta'''
+    '''filters fasta
+    根据 HAVANA 注释和区域长度信息过滤 FASTA 序列。
+    '''
         
     filtered_dict = {}
     
     for transcript,seq in fasta_dict.items():
         if transcript[-5:] != 'PAR_Y': #removes any PAR_Y transcripts
+            #移除所有 PAR_Y 转录本。
             if transcript in HAVANA_IDs: #Ensures the transcript has been manually annotated by HAVANA
+                
                 
                 UTR5_len = int(region_lens[transcript][0])
                 CDS_len = int(region_lens[transcript][1])
                 UTR3_len = int(region_lens[transcript][2])
                 
                 if UTR5_len > 0 and UTR3_len > 0: #ensures the transcript has both a 5' and 3'UTR
+                    #确保转录本同时具有 5'UTR 和 3'UTR。
                     if CDS_len % 3 == 0: #ensures the CDS is equally divisible by 3
                         cds_seq = seq[UTR5_len:-UTR3_len]
                         start_codon = cds_seq[:3]
                         stop_codon = cds_seq[-3:]
                         if start_codon == "ATG" or start_codon == "CTG" or start_codon == "TTG" or start_codon == "GTG": #ensures the CDS starts with an nUG start codon
+                            #确保 CDS 以 nUG 起始密码子开始。
                             if stop_codon == "TAA" or stop_codon == "TGA" or stop_codon == "TAG": #ensures the CDS ends with a stop codon
+                                #确保 CDS 以终止密码子结束。
                                 filtered_dict[transcript] = seq
     return (filtered_dict)
 
@@ -89,18 +104,23 @@ def main():
     args = parser.parse_args()
     
     #read in FASTA
+    #读取 FASTA 文件。
     original_fasta = read_in_fasta(args.FASTA)
     
     #extract HAVANA protein coding transcripts IDs
+    #提取 HAVANA 注释的蛋白编码转录本 ID。
     HAVANA_IDs = extract_HAVANA_IDs(args.GTF)
     
     #read in the region lengths
+    #读取区域长度文件。
     region_lengths = read_region_lengths(args.region_lengths_fyle)
     
     #filter FASTA
+    #过滤 FASTA 序列。
     filtered_dict = filter_fasta(original_fasta, HAVANA_IDs, region_lengths)
     
     #write FASTA
+    #写出过滤后的 FASTA 文件。
     fasta_fylename = args.FASTA.replace('_reformatted', '_filtered')
     write_fasta(filtered_dict, fasta_fylename)
 

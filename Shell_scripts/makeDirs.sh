@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 #read in variables
+#读取公共变量
 source common_variables.sh
 
 #make directories
+#创建目录
 mkdir $fastq_dir
 mkdir $fastqc_dir
 mkdir $SAM_dir

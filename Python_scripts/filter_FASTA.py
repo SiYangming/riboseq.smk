@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 #Imports
+#导入依赖包
 import argparse
 from Bio import SeqIO
 
 #Functions
+#函数定义
 def read_in_fasta(afasta):
-    '''Reads in a fasta file to a dictionary'''
+    '''Reads in a fasta file to a dictionary
+    读取 fasta 文件并保存为字典。
+    '''
     fasta_dict = {}
     fasta_sequences = SeqIO.parse(open(afasta),'fasta')
     for fasta in fasta_sequences:
@@ -14,7 +18,9 @@ def read_in_fasta(afasta):
     return fasta_dict
 
 def read_in_IDs(infyle):
-    '''reads in transcript IDs and returns it as a dictionary'''
+    '''reads in transcript IDs and returns it as a dictionary
+    读取转录本 ID 列表并保存为字典。
+    '''
     adict = {}
     with open(infyle, 'r') as f:
         for line in f:
@@ -24,7 +30,9 @@ def read_in_IDs(infyle):
     
         
 def write_filtered_fasta(afasta, adict, outfyle, LW=80):
-    '''takes a fasta dictionary and a list of IDs and writes fasta for all IDs in the list'''
+    '''takes a fasta dictionary and a list of IDs and writes fasta for all IDs in the list
+    根据给定 ID 列表过滤 FASTA 序列并写出新 fasta 文件。
+    '''
     with open(outfyle, 'w') as g:
         for k,v in afasta.items():
             transcript = k.strip('>')

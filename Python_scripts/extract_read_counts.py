@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
 #Imports
+#导入依赖包
 import argparse
 
 #Functions
+#函数定义
 def extract_cutadapt_counts(fylename):
-    '''takes a cutadapt log file and extracts the read counts'''
+    '''takes a cutadapt log file and extracts the read counts
+    读取 cutadapt 日志文件并提取输入和输出的 reads 数量。
+    '''
     logfyle=fylename + "_cutadapt_log.txt"
     with open(logfyle,'r') as f:
         for line in f:
@@ -16,7 +20,9 @@ def extract_cutadapt_counts(fylename):
     return (in_counts, out_counts)
     
 def extract_bbmap_counts(fylename,RNA_molecule):
-    '''takes a bbmap log and extracts mapped and unmapped read counts'''
+    '''takes a bbmap log and extracts mapped and unmapped read counts
+    读取 bbmap 日志文件，提取比对前后的 reads 数量。
+    '''
     logfyle=fylename + "_" + RNA_molecule + "_log.txt"
     with open(logfyle,'r') as f:
         for line in f:
@@ -27,7 +33,9 @@ def extract_bbmap_counts(fylename,RNA_molecule):
     return (in_counts, out_counts)
     
 def extract_bowtie2_counts(fylename,RNA_molecule):
-    '''takes a bowtie2 log and extracts mapped and unmapped read counts'''
+    '''takes a bowtie2 log and extracts mapped and unmapped read counts
+    读取 bowtie2 日志文件，提取比对前后以及多重比对的 reads 数量。
+    '''
     logfyle=fylename + "_" + RNA_molecule + "_log.txt"
     with open(logfyle,'r') as f:
         
@@ -44,7 +52,9 @@ def extract_bowtie2_counts(fylename,RNA_molecule):
     return (in_counts, str(out_counts))
 
 def extract_UMI_clipped_counts(fylename):
-    '''takes a UMItools extracted UMI log files and extracts the read counts'''
+    '''takes a UMItools extracted UMI log files and extracts the read counts
+    读取 UMItools 提取 UMI 的日志文件，并提取输入和输出 reads 数量。
+    '''
     logfyle=fylename + "_extracted_UMIs.log"
     with open(logfyle,'r') as f:
         for line in f:
@@ -55,7 +65,9 @@ def extract_UMI_clipped_counts(fylename):
     return (in_counts, out_counts)
     
 def extract_deduplication_counts(fylename):
-    '''takes a UMItools deduplication log files and extracts the read counts'''
+    '''takes a UMItools deduplication log files and extracts the read counts
+    读取 UMItools 去重日志文件，并提取去重前后的 reads 数量。
+    '''
     logfyle=fylename + "_deduplication_log.txt"
     with open(logfyle,'r') as f:
         for line in f:
@@ -87,6 +99,7 @@ def main():
     deduplication_in, deduplication_out = extract_deduplication_counts(args.log_dir + '/' + args.infyle)
     
     #check everything adds up
+    #检查各步骤读数是否前后一致。
     if int(cutadapt_out) != int(UMI_clipped_in):
         print("warning: cutadapt out does not equal UMI clipped in for sample: " + args.infyle)
     
@@ -106,6 +119,7 @@ def main():
         print("warning: pc reads does not input to depulication for sample: " + args.infyle)
     
     #write output
+    #写出各步骤的 reads 计数汇总文件。
     outfyle = args.log_dir + '/' + args.infyle + "_read_counts.csv"
     
     if args.lib_type == "RPFs":

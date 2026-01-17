@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
 #Imports
+#导入依赖包
 import argparse
 from Ribosome_profiling_functions import read_counts
 from Ribosome_profiling_functions import read_region_lengths
 
 #Functions
+#函数定义
 def calculate_periodicity(in_dict, offset, region_lengths_dict, outfyle):
-    '''takes a counts dict and sums all the counts within each CDS frame for each transcript, using a user defined offset'''
+    '''takes a counts dict and sums all the counts within each CDS frame for each transcript, using a user defined offset
+    使用给定的 offset，将每个转录本 CDS 内不同阅读框的计数分别求和。
+    '''
     f0_dict, f1_dict, f2_dict = {},{},{}
     
     for k, v in in_dict.items():
@@ -43,21 +47,25 @@ def main():
     args = parser.parse_args()
     
     #Read in the counts file
+    #读取计数文件。
     if args.in_dir == None:
         input_counts = read_counts(args.infyle)
     else:
         input_counts = read_counts(args.in_dir + '/' + args.infyle)
     
     #read in the region lengths
+    #读取区域长度文件。
     region_lengths = read_region_lengths(args.region_lengths_fyle)
     
     #generate output filename
+    #生成输出文件名。
     if args.out_dir == None:
         fylename = args.infyle.replace('.counts', '_periodicity.csv')
     else:
         fylename = args.out_dir + '/' + args.infyle.replace('.counts', '_periodicity.csv')
         
     #calculate periodicity and write out
+    #计算周期性并写出结果。
     calculate_periodicity(input_counts, args.offset, region_lengths, fylename)
     
 if __name__ == '__main__':

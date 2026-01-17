@@ -1,13 +1,17 @@
 #load libraries
+#加载库。
 library(tidyverse)
 
 #read in common variables
+#读取通用变量。
 source("common_variables.R")
 
 #create a variable for what the treatment is----
+#创建处理组变量。
 treatment <- "KO"
 
 #themes----
+#定义通用绘图主题。
 mytheme <- theme_classic()+
   theme(plot.title = element_text(size = 20, hjust = 0.5, face = "bold"),
         axis.title = element_text(size = 18),
@@ -16,11 +20,13 @@ mytheme <- theme_classic()+
         legend.text = element_text(size = 16))
 
 #read in DESeq2 output----
+#读取 DESeq2 输出结果（Totals、RPFs 和 TE）。
 totals <- read_csv(file = file.path(parent_dir, "Analysis/DESeq2_output", paste0("Totals_", treatment, "_DEseq2_apeglm_LFC_shrinkage.csv")))
 RPFs <- read_csv(file = file.path(parent_dir, "Analysis/DESeq2_output", paste0("RPFs_", treatment, "_DEseq2_apeglm_LFC_shrinkage.csv")))
 TE <- read_csv((file = file.path(parent_dir, "Analysis/DESeq2_output", paste0("TE_", treatment, "_DEseq2.csv"))))
 
 #plot volcanos----
+#绘制火山图。
 RPFs %>%
   filter(!(is.na(padj))) %>%
   mutate(sig = factor(case_when(padj < 0.1 ~ "*",
@@ -52,6 +58,7 @@ print(totals_volcano)
 dev.off()
 
 #plot MAs----
+#绘制 MA 图。
 RPFs %>%
   filter(!(is.na(padj))) %>%
   mutate(sig = factor(case_when(padj < 0.1 ~ "*",
@@ -83,7 +90,9 @@ print(totals_MA)
 dev.off()
 
 #merge RPF with totals data----
+#合并 RPF 与 Totals，并基于阈值进行分组。
 #select apdj thresholds
+#选择 padj 阈值。
 TE_sig_padj <- 0.1
 RPF_sig_padj <- 0.1
 
@@ -93,6 +102,7 @@ RPF_non_sig_padj <- 0.5
 log2FC_threshold <- 0.2
 
 #merged data and make groups based on RPF/Total adjusted p-values or TE adjusted p-values
+#合并数据后，根据 RPF/Total 的 padj 或 TE 的 padj 划分分组。
 RPFs %>%
   select(gene, gene_sym, log2FoldChange, padj) %>%
   rename(RPFs_log2FC = log2FoldChange,
@@ -118,8 +128,11 @@ RPFs %>%
 summary(merged_data)
 
 #plot TE scatters----
+#绘制 TE 散点图。
 #based on RPFs/totals logFC
+#基于 RPF 和 Totals 的 logFC。
 #add "n=" labels
+#为不同分组添加 “n=” 标签。
 merged_data %>%
   group_by(RPFs_group) %>%
   summarize(num = n()) %>%
@@ -150,7 +163,9 @@ print(RPF_groups_scatter_plot)
 dev.off()
 
 #based on TE
+#基于 TE 分组绘制散点图。
 #add "n=" labels
+#为每个 TE 分组添加样本数标签。
 merged_data %>%
   group_by(TE_group) %>%
   summarize(num = n()) %>%
@@ -185,5 +200,6 @@ print(TE_scatter_plot)
 dev.off()
 
 #write out csv
+#将合并后的 DESeq2 结果写出为 CSV。
 write_csv(merged_data, file.path(parent_dir, "Analysis/DESeq2_output", paste0(treatment, "_merged_DESeq2.csv")))
 

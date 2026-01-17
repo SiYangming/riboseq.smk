@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 
 #Imports
+#导入依赖包
 import argparse
 from Ribosome_profiling_functions import read_counts
 from Ribosome_profiling_functions import read_region_lengths
 
 #Functions
+#函数定义
 def splice_counts(in_dict, region_lengths_dict, n, polyA_lib):
     '''takes a counts dict and for all transcripts with a 5'UTR, CDS and 3'UTR greater than 2 * n (user defined integer),
-    it splices the first n nt of the 5'UTR, n nt either side of start and stop codons and last n nt of the 3'UTR'''
+    it splices the first n nt of the 5'UTR, n nt either side of start and stop codons and last n nt of the 3'UTR
+    对满足长度要求的转录本，从 5'UTR 起始、起始/终止密码子附近以及 3'UTR 末端剪切出长度为 n 的片段。
+    '''
     fp_end_counts, start_site_counts, stop_site_counts, tp_end_counts = {},{},{},{}
     for k, v in in_dict.items():
         UTR5_len = region_lengths_dict[k][0]
@@ -27,14 +31,18 @@ def splice_counts(in_dict, region_lengths_dict, n, polyA_lib):
     return (fp_end_counts, start_site_counts, stop_site_counts, tp_end_counts)
 
 def sum_counts(adict, n):
-    '''sums all counts at each position within a dict and returns as a list'''
+    '''sums all counts at each position within a dict and returns as a list
+    对字典中所有序列在每个位点上的计数求和，返回总和列表。
+    '''
     summed_counts = [0]*n
     for counts in adict.values():
         summed_counts = [x + y for x, y in zip(summed_counts, map(int, counts))]
     return summed_counts
 
 def write_junction_counts(alist, outfyle, n):
-    '''Takes a list of summed junction counts and writes out as a csv with positions'''
+    '''Takes a list of summed junction counts and writes out as a csv with positions
+    将剪接位点两侧的总计数写出为带位点信息的 CSV。
+    '''
     with open(outfyle, 'w') as g:
         g.write('position,counts\n')
         zipped = zip(range(-n, n), alist)
@@ -42,7 +50,9 @@ def write_junction_counts(alist, outfyle, n):
             g.write(','.join(map(str,i)) + '\n')
 
 def write_end_counts(alist, outfyle, n):
-    '''Takes a list of summed end counts and writes out as a csv with positions'''
+    '''Takes a list of summed end counts and writes out as a csv with positions
+    将 5'/3' 末端区域的总计数写出为带位点信息的 CSV。
+    '''
     with open(outfyle, 'w') as g:
         g.write('position,counts\n')
         zipped = zip(range(1, n+1), alist)
@@ -60,18 +70,22 @@ def main():
     args = parser.parse_args()
     
     #Read in the counts file
+    #读取计数文件。
     if args.in_dir == None:
         input_counts = read_counts(args.infyle)
     else:
         input_counts = read_counts(args.in_dir + '/' + args.infyle)
     
     #read in the region lengths
+    #读取区域长度文件。
     region_lengths = read_region_lengths(args.region_lengths_fyle)
     
     #splice counts
+    #按指定区域剪切计数。
     fp_end_counts, start_site_counts, stop_site_counts, tp_end_counts = splice_counts(input_counts, region_lengths, args.n, args.polyA_lib)
     
     #sum spliced counts
+    #对剪切后的计数求和。
     summed_start_site_counts = sum_counts(start_site_counts, (args.n * 2))
     summed_stop_site_counts = sum_counts(stop_site_counts, (args.n * 2))
     
@@ -79,6 +93,7 @@ def main():
     summed_tp_end_counts = sum_counts(tp_end_counts, args.n)
     
     #write summed spliced counts to file
+    #将各剪切区域的计数和写入文件。
     if args.out_dir == None:
         start_site_fylename = args.infyle.replace('.counts', '_start_site.csv')
         stop_site_fylename = args.infyle.replace('.counts', '_stop_site.csv')

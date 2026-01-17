@@ -1,4 +1,5 @@
 #This script will need some editing for sample names and still needs annotating properly
+#该脚本在样本名称部分仍需根据实际情况修改，并且注释尚未完全完善。
 
 library(tidyverse)
 library(grid)
@@ -14,11 +15,13 @@ myTheme <- theme_bw()+
         legend.text = element_text(size = 16))
 
 #read in data----
+#读取数据。 
 data_list <- list()
 for (sample in RPF_sample_names) {
   df <- read_csv(file = file.path(parent_dir, paste0("Analysis/codon_counts/", sample, "_pc_final_codon_counts.csv")))
   
   #filter out stop codons and normalise data
+  #过滤终止密码子并对数据进行标准化。
   df %>%
     filter(codon != "TGA" & codon != "TAG" & codon != "TAA") %>%
     mutate(minus_4 = (log2(`-4`)) - log2(total / 7),
@@ -34,6 +37,7 @@ for (sample in RPF_sample_names) {
 data <- do.call("rbind", data_list)
 
 #gather the data into tidy format----
+#将数据整理为整洁格式。 
 data %>%
   pull(codon) %>%
   unique() -> codons
@@ -62,6 +66,7 @@ gathered_data %>%
          wobble = factor(str_sub(codon, 3,3))) -> plot_data
 
 #plot normalised data----
+#绘制标准化后的密码子占据情况。 
 for (sample in RPF_sample_names) {
   plot_title <- str_replace_all(sample, "_", " ")
   plot_title <- str_remove(plot_title, " RPFs")
@@ -82,6 +87,7 @@ for (sample in RPF_sample_names) {
 }
 
 #calculate delta between samples----
+#计算样本之间的差值（delta）。 
 plot_data %>%
   mutate(group = factor(case_when(sample %in% Ctrl_RPF_sample_names ~ "Ctrl",
                                   sample %in% CNOT1_RPF_sample_names ~ "CNOT1"))) %>%
@@ -93,6 +99,7 @@ plot_data %>%
          wobble = factor(str_sub(codon, 3,3))) -> delta_data
 
 #plot delta----
+#绘制各位置的密码子富集差值。 
 delta_data %>%
   ggplot(aes(x = position, y = delta_freq, colour = wobble))+
   geom_point() +
@@ -107,6 +114,7 @@ print(delta_plot)
 dev.off()
 
 #plot scatter plots for A and P-sites----
+#绘制 A 位点和 P 位点密码子富集的散点图。 
 delta_data %>%
   filter(position == 0) %>%
   ggplot(aes(x = Ctrl, y = CNOT1, colour = wobble))+
