@@ -1,0 +1,24 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: riboseq.smk sample sheet schema
+type: object
+properties:
+  sample:
+    type: string
+  fastq_1:
+    type: string
+  fastq_2:
+    {}
+  strandedness:
+    type: string
+  type:
+    type: string
+  sample_description:
+    type: string
+  pair:
+    type: integer
+  treatment:
+    type: string
+required:
+  - sample
+  - fastq_1
+  - type

@@ -1,0 +1,18 @@
+project:
+  name: "riboseq.smk"
+
+paths:
+  workdir: "."
+  results: "results"
+  testdata_dir: "testdata"
+
+samples:
+  sheet: "testdata/samplesheet_local.csv"
+  contrasts: "testdata/contrasts_local.csv"
+
+reference:
+  dir: "reference"
+
+workflow:
+  mode: "legacy"
+

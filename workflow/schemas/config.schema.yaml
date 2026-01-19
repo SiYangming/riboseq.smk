@@ -1,0 +1,40 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: riboseq.smk main configuration schema
+type: object
+properties:
+  project:
+    type: object
+    properties:
+      name:
+        type: string
+  paths:
+    type: object
+    properties:
+      workdir:
+        type: string
+      results:
+        type: string
+      testdata_dir:
+        type: string
+  samples:
+    type: object
+    properties:
+      sheet:
+        type: string
+      contrasts:
+        type: string
+    required:
+      - sheet
+  reference:
+    type: object
+    properties:
+      dir:
+        type: string
+  workflow:
+    type: object
+    properties:
+      mode:
+        type: string
+required:
+  - samples
+
