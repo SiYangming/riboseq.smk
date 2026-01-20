@@ -1,1 +1,0 @@
-test-datasets-riboseq/rfam-5.8s-database-id98.fasta
