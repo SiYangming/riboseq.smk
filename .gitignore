@@ -1,3 +1,4 @@
 .DS_Store
 /.snakemake
 /\?
+reference/gencode.v49.pc_transcripts.fa.gz
