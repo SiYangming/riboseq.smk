@@ -2,3 +2,8 @@
 /.snakemake
 /\?
 reference/gencode.v49.pc_transcripts.fa.gz
+/reference/bowtie2_index
+/reference/bbmap_index
+/reference/star_index
+/testdata_results
+reference/Homo_sapiens.GRCh38.dna.chromosome.20.fa
