@@ -1,17 +1,3 @@
-def bbmap_filter_extra(wildcards):
-    mem = config["bbmap"].get("memory", "Xmx=4g")
-    extra = config["bbmap"].get("filter_extra", "ambiguous=best nodisk")
-    return f"{mem} {extra}".strip()
-
-
-def bbmap_pc_extra(wildcards):
-    mem = config["bbmap"].get("memory", "Xmx=4g")
-    extra = config["bbmap"].get(
-        "pc_extra", "ambiguous=best nodisk trimreaddescription=t"
-    )
-    return f"{mem} {extra}".strip()
-
-
 rule bbmap_rrna:
     input:
         fastq=lambda wc: umi_fq(wc.sample),

@@ -2,15 +2,15 @@ rule rsem_prepare_reference:
     input:
         reference_genome=config["pc_fasta"],
     output:
-        seq=RSEM_INDEX + ".seq",
-        grp=RSEM_INDEX + ".grp",
-        ti=RSEM_INDEX + ".ti",
-        bt2_1=RSEM_INDEX + ".1.bt2",
-        bt2_2=RSEM_INDEX + ".2.bt2",
-        bt2_3=RSEM_INDEX + ".3.bt2",
-        bt2_4=RSEM_INDEX + ".4.bt2",
-        bt2_rev1=RSEM_INDEX + ".rev.1.bt2",
-        bt2_rev2=RSEM_INDEX + ".rev.2.bt2",
+        seq=f"{RSEM_INDEX}.seq",
+        grp=f"{RSEM_INDEX}.grp",
+        ti=f"{RSEM_INDEX}.ti",
+        bt2_1=f"{RSEM_INDEX}.1.bt2",
+        bt2_2=f"{RSEM_INDEX}.2.bt2",
+        bt2_3=f"{RSEM_INDEX}.3.bt2",
+        bt2_4=f"{RSEM_INDEX}.4.bt2",
+        bt2_rev1=f"{RSEM_INDEX}.rev.1.bt2",
+        bt2_rev2=f"{RSEM_INDEX}.rev.2.bt2",
     log:
         "logs/rsem/prepare_reference.log",
     conda:
@@ -57,14 +57,6 @@ rule rsem_name_sort:
         mem_overhead_factor=0.1,
     script:
         "../scripts/samtools_sort.py"
-
-
-def rsem_alignments(wildcards):
-    if is_pe(wildcards.sample):
-        return "results/BAM_files/{sample}_pc_deduplicated_name_sorted.bam".format(
-            sample=wildcards.sample
-        )
-    return pc_final_bam(wildcards.sample)
 
 
 rule rsem_calculate_expression:

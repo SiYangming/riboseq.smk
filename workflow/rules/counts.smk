@@ -2,7 +2,7 @@ rule faidx_pc:
     input:
         fasta=most_abundant_fasta(),
     output:
-        most_abundant_fasta() + ".fai",
+        f"{most_abundant_fasta()}.fai",
     log:
         "logs/samtools/faidx_pc.log",
     conda:
@@ -14,9 +14,9 @@ rule faidx_pc:
 rule count_by_length:
     input:
         bam=lambda wc: pc_final_bam(wc.sample),
-        bai=lambda wc: pc_final_bam(wc.sample) + ".bai",
+        bai=lambda wc: f"{pc_final_bam(wc.sample)}.bai",
         fasta=lambda wc: most_abundant_fasta(),
-        fai=lambda wc: most_abundant_fasta() + ".fai",
+        fai=lambda wc: f"{most_abundant_fasta()}.fai",
     output:
         "results/Counts_files/{sample}_pc_L{length}_Off0.counts",
     log:
@@ -96,9 +96,9 @@ rule periodicity:
 rule count_final:
     input:
         bam=lambda wc: pc_final_bam(wc.sample),
-        bai=lambda wc: pc_final_bam(wc.sample) + ".bai",
+        bai=lambda wc: f"{pc_final_bam(wc.sample)}.bai",
         fasta=lambda wc: most_abundant_fasta(),
-        fai=lambda wc: most_abundant_fasta() + ".fai",
+        fai=lambda wc: f"{most_abundant_fasta()}.fai",
     output:
         "results/Counts_files/{sample}_pc_final.counts",
     log:

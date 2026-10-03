@@ -1,15 +1,3 @@
-def umi_extract_method(wildcards):
-    if sample_type(wildcards.sample) in RPF_TYPES:
-        return config["rpf"].get("umi_extract_method", "regex")
-    return config["totals"].get("umi_extract_method", "string")
-
-
-def umi_bc_pattern(wildcards):
-    if sample_type(wildcards.sample) in RPF_TYPES:
-        return config["rpf"]["umi_bc_pattern"]
-    return config["totals"]["umi_bc_pattern"]
-
-
 rule umi_tools_extract_se:
     input:
         fastq1="results/fastq_files/{sample}_cutadapt.fastq.gz",

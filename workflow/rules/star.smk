@@ -1,11 +1,3 @@
-def star_index_input(_wildcards=None):
-    files = {"fasta": config.get("genome_fasta") or config["pc_fasta"]}
-    gtf = config.get("gtf") or ""
-    if gtf:
-        files["gtf"] = gtf
-    return files
-
-
 rule star_index:
     input:
         unpack(star_index_input),
@@ -21,16 +13,6 @@ rule star_index:
         sjdbOverhang=config["star"].get("sjdb_overhang", 100),
     script:
         "../scripts/star_index.py"
-
-
-def star_align_input(wildcards):
-    reads = {"idx": STAR_INDEX}
-    if is_pe(wildcards.sample):
-        reads["fq1"] = umi_fq(wildcards.sample, "R1")
-        reads["fq2"] = umi_fq(wildcards.sample, "R2")
-    else:
-        reads["fq1"] = umi_fq(wildcards.sample)
-    return reads
 
 
 rule star_align:

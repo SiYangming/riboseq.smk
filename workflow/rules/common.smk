@@ -148,3 +148,71 @@ def pipeline_targets():
     if ENTRY in ("downstream", "all"):
         targets.append("results/Analysis/downstream.done")
     return targets
+
+
+def cutadapt_adapters(wildcards):
+    if sample_type(wildcards.sample) in RPF_TYPES:
+        return f"-a {config['rpf']['adaptor']}"
+    adaptor = config["totals"]["adaptor"]
+    if is_pe(wildcards.sample):
+        return f"-a {adaptor} -A {adaptor}"
+    return f"-a {adaptor}"
+
+
+def cutadapt_extra(wildcards):
+    extra = config["cutadapt"].get("extra", "") or "--nextseq-trim=20"
+    if "--nextseq-trim" not in extra:
+        extra = f"--nextseq-trim=20 {extra}".strip()
+    if sample_type(wildcards.sample) in RPF_TYPES:
+        return f"{extra} -m {config['rpf']['min_len']} -M {config['rpf']['max_len']}"
+    return f"{extra} -m {config['totals']['min_len']}"
+
+
+def umi_extract_method(wildcards):
+    if sample_type(wildcards.sample) in RPF_TYPES:
+        return config["rpf"].get("umi_extract_method", "regex")
+    return config["totals"].get("umi_extract_method", "string")
+
+
+def umi_bc_pattern(wildcards):
+    if sample_type(wildcards.sample) in RPF_TYPES:
+        return config["rpf"]["umi_bc_pattern"]
+    return config["totals"]["umi_bc_pattern"]
+
+
+def bbmap_filter_extra(wildcards):
+    mem = config["bbmap"].get("memory", "Xmx=4g")
+    extra = config["bbmap"].get("filter_extra", "ambiguous=best nodisk")
+    return f"{mem} {extra}".strip()
+
+
+def bbmap_pc_extra(wildcards):
+    mem = config["bbmap"].get("memory", "Xmx=4g")
+    extra = config["bbmap"].get(
+        "pc_extra", "ambiguous=best nodisk trimreaddescription=t"
+    )
+    return f"{mem} {extra}".strip()
+
+
+def rsem_alignments(wildcards):
+    if is_pe(wildcards.sample):
+        return f"results/BAM_files/{wildcards.sample}_pc_deduplicated_name_sorted.bam"
+    return pc_final_bam(wildcards.sample)
+
+
+def star_index_input(_wildcards=None):
+    files = {"fasta": config.get("genome_fasta") or config["pc_fasta"]}
+    gtf = config.get("gtf") or ""
+    if gtf:
+        files["gtf"] = gtf
+    return files
+
+
+def star_align_input(wildcards):
+    reads = {"idx": STAR_INDEX}
+    if is_pe(wildcards.sample):
+        reads["fq1"] = umi_fq(wildcards.sample, "R1")
+        reads["fq2"] = umi_fq(wildcards.sample, "R2")
+    else:
+        reads["fq1"] = umi_fq(wildcards.sample)
+    return reads
