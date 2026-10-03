@@ -41,6 +41,8 @@ rule fastqc_file:
         zip="results/fastQC_files/{prefix}_fastqc.zip",
     log:
         "logs/fastqc/{prefix}.log",
+    wildcard_constraints:
+        prefix="[^/]+",
     conda:
         "../envs/fastqc.yaml"
     threads: THREADS
