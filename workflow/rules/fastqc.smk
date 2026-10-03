@@ -7,6 +7,8 @@ rule stage_fastq:
         "logs/stage_fastq/{sample}_{mate}.log",
     wildcard_constraints:
         mate="R1|R2",
+    conda:
+        "../envs/python.yaml"
     script:
         "../scripts/stage_fastq.py"
 
