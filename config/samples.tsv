@@ -1,0 +1,3 @@
+sample	fastq_1	fastq_2	type	treatment
+rpf_demo	reads/rpf_demo.fastq.gz		riboseq	control
+totals_demo	reads/totals_demo_1.fastq.gz	reads/totals_demo_2.fastq.gz	rnaseq	control

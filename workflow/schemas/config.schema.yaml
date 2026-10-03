@@ -1,0 +1,31 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+type: object
+description: Ribo-seq workflow configuration
+properties:
+  exec_mode:
+    type: string
+    enum: [native, conda, container]
+  sample_sheet:
+    type: string
+  entrypoint:
+    type: string
+    enum: [all, totals, rpfs, downstream, qc]
+  threads:
+    type: integer
+    minimum: 1
+  skip_umi:
+    type: boolean
+  use_star:
+    type: boolean
+  rrna_fasta:
+    type: string
+  trna_fasta:
+    type: string
+  pc_fasta:
+    type: string
+additionalProperties: true
+required:
+  - exec_mode
+  - sample_sheet
+  - entrypoint
+  - pc_fasta

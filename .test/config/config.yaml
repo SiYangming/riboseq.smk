@@ -1,0 +1,90 @@
+exec_mode: conda
+sample_sheet: config/samples.tsv
+entrypoint: qc
+threads: 2
+skip_umi: false
+use_star: false
+rpf_min_len: 25
+rpf_max_len: 35
+final_lengths: "27,28,29,30,31,32"
+final_offsets: "12,12,12,12,13,13"
+region_offset: 15
+splice_nt: 50
+
+fasta_dir: resources
+genome_version: v49
+ref_suffix: _chr20
+rrna_fasta: resources/rrna.fa
+trna_fasta: resources/trna.fa
+pc_fasta: resources/tiny.fa
+genome_fasta: resources/tiny.fa
+gtf: ""
+region_lengths: resources/region_lengths.csv
+most_abundant_fasta: ""
+info_csv: ""
+
+rpf:
+  adaptor: TGGAATTCTCGGGTGCCAAGG
+  min_len: 30
+  max_len: 50
+  umi_extract_method: regex
+  umi_bc_pattern: "^(?P<umi_1>.{4}).+(?P<umi_2>.{4})$"
+
+totals:
+  adaptor: AGATCGGAAGAG
+  min_len: 30
+  umi_extract_method: string
+  umi_bc_pattern: NNNNNNNNNNNN
+
+fastqc:
+  extra: ""
+  mem_overhead_factor: 0.1
+  mem_mb: 2048
+  fastqc_bin: fastqc
+  container_image: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
+
+cutadapt:
+  extra: ""
+  cutadapt_bin: cutadapt
+  container_image: quay.io/biocontainers/cutadapt:5.2--py310h4b81fae_0
+
+umi_tools:
+  extra_params: ""
+  umi_tools_bin: umi_tools
+  container_image: quay.io/biocontainers/umi_tools:1.1.6--py39hf95ce1a_0
+
+bbmap:
+  memory: Xmx=2g
+  filter_extra: ambiguous=best nodisk
+  pc_extra: ambiguous=best nodisk trimreaddescription=t
+  bbmap_bin: bbmap.sh
+  container_image: quay.io/biocontainers/bbmap:39.52--he5f24b4_0
+
+bowtie2:
+  bowtie2_extra_params: "--sensitive --dpad 0 --gbar 99999999 --mp 1,1 --np 1 --score-min L,0,-0.1"
+  align_bin: bowtie2
+  index_bin: bowtie2-build
+  container_image: quay.io/biocontainers/bowtie2:2.5.4--h7071971_4
+
+star:
+  align_extra: "--outSAMtype BAM Unsorted --outSAMprimaryFlag AllBestScore --outFilterMultimapNmax 5 --outFilterMismatchNmax 5 --alignEndsType EndToEnd"
+  index_extra: ""
+  sjdb_overhang: 100
+  star_bin: STAR
+  container_image: quay.io/biocontainers/star:2.7.11b--h5ca1c30_6
+
+rsem:
+  calculate_expression_params: ""
+  prepare_reference_params: "--bowtie2"
+  fragment_length_mean: 300
+  fragment_length_sd: 100
+  strandedness: forward
+  calculate_expression_bin: rsem-calculate-expression
+  prepare_reference_bin: rsem-prepare-reference
+  container_image: quay.io/biocontainers/rsem:1.3.3--pl5321h9f5acd7_4
+
+samtools:
+  sort_extra_params: ""
+  index_extra_params: ""
+  samtools_bin: samtools
+  container_image: quay.io/biocontainers/samtools:1.23--h96c455f_0

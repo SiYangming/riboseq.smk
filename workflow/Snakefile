@@ -1,0 +1,31 @@
+configfile: "config/config.yaml"
+
+include: "rules/common.smk"
+include: "rules/fastqc.smk"
+include: "rules/cutadapt.smk"
+include: "rules/umi_tools.smk"
+include: "rules/bbmap.smk"
+include: "rules/rsem.smk"
+include: "rules/bowtie2.smk"
+include: "rules/star.smk"
+include: "rules/samtools.smk"
+include: "rules/counts.smk"
+include: "rules/downstream.smk"
+
+
+onstart:
+    print("\n--- Ribo-seq analysis started ---\n")
+
+
+onsuccess:
+    print("\n--- Workflow finished! ---\n")
+
+
+onerror:
+    print("\n--- An error occurred! ---\n")
+
+
+rule all:
+    default_target: True
+    input:
+        pipeline_targets()

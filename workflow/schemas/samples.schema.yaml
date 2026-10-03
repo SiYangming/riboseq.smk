@@ -1,0 +1,18 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: sample sheet rows
+properties:
+  sample:
+    type: string
+  fastq_1:
+    type: string
+  fastq_2:
+    type: string
+  type:
+    type: string
+    description: riboseq (RPF) or rnaseq (Totals)
+  treatment:
+    type: string
+required:
+  - sample
+  - fastq_1
+  - type
