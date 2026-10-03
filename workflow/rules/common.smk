@@ -17,7 +17,9 @@ SKIP_UMI = bool(config.get("skip_umi", False))
 USE_STAR = bool(config.get("use_star", True))
 RPF_TYPES = {"riboseq", "rpf", "rpfs"}
 TOTAL_TYPES = {"rnaseq", "totals", "total", "rna"}
-RPF_LENGTHS = list(range(int(config.get("rpf_min_len", 25)), int(config.get("rpf_max_len", 35)) + 1))
+RPF_LENGTHS = list(
+    range(int(config.get("rpf_min_len", 25)), int(config.get("rpf_max_len", 35)) + 1)
+)
 RSEM_INDEX = "results/index/rsem/rsem"
 STAR_INDEX = "results/index/star"
 SCRIPT_DIR = os.path.join(str(workflow.basedir), "scripts")
@@ -107,13 +109,16 @@ def most_abundant_fasta():
 def r_params():
     return {
         "rdir": os.path.join(str(workflow.basedir), "scripts", "R"),
-        "parent_dir": "results",
         "project_root": os.path.abspath("."),
         "info_csv": config.get("info_csv", ""),
         "fasta_dir": config.get("fasta_dir", "reference"),
         "rpf_names": " ".join(rpf_samples()),
         "totals_names": " ".join(totals_samples()),
     }
+
+
+def results_parent(wildcards, output):
+    return "results"
 
 
 def pipeline_targets():
@@ -129,11 +134,17 @@ def pipeline_targets():
             if USE_STAR:
                 targets.append(f"results/BAM_files/{sample}_genome_sorted.bam")
         if totals_samples():
-            targets.append("results/Analysis/most_abundant_transcripts/most_abundant_transcripts.fa")
+            targets.append(
+                "results/Analysis/most_abundant_transcripts/most_abundant_transcripts.fa"
+            )
     if ENTRY in ("rpfs", "all"):
         for sample in rpf_samples():
-            targets.append(f"results/Counts_files/csv_files/{sample}_pc_final_counts.csv")
-            targets.append(f"results/Analysis/codon_counts/{sample}_pc_final_codon_counts_20_-10.csv")
+            targets.append(
+                f"results/Counts_files/csv_files/{sample}_pc_final_counts.csv"
+            )
+            targets.append(
+                f"results/Analysis/codon_counts/{sample}_pc_final_codon_counts_20_-10.csv"
+            )
     if ENTRY in ("downstream", "all"):
         targets.append("results/Analysis/downstream.done")
     return targets

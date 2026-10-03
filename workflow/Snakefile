@@ -1,5 +1,6 @@
 configfile: "config/config.yaml"
 
+
 include: "rules/common.smk"
 include: "rules/fastqc.smk"
 include: "rules/cutadapt.smk"
@@ -28,4 +29,4 @@ onerror:
 rule all:
     default_target: True
     input:
-        pipeline_targets()
+        pipeline_targets(),

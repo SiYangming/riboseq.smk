@@ -20,16 +20,20 @@ DOWNSTREAM_R = [
 
 rule downstream:
     input:
-        expand("results/Counts_files/csv_files/{sample}_pc_final_counts.csv", sample=rpf_samples()),
-        expand("results/rsem/{sample}.isoforms.results", sample=totals_samples())
+        expand(
+            "results/Counts_files/csv_files/{sample}_pc_final_counts.csv",
+            sample=rpf_samples(),
+        ),
+        expand("results/rsem/{sample}.isoforms.results", sample=totals_samples()),
     output:
-        touch("results/Analysis/downstream.done")
-    params:
-        **r_params(),
-        scripts=DOWNSTREAM_R
+        touch("results/Analysis/downstream.done"),
+    log:
+        "logs/R/downstream.log",
     conda:
         "../envs/r_analysis.yaml"
-    log:
-        "logs/R/downstream.log"
+    params:
+        **r_params(),
+        parent_dir=results_parent,
+        scripts=DOWNSTREAM_R,
     script:
         "../scripts/run_r.py"
